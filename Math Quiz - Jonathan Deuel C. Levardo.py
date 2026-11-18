@@ -5,13 +5,13 @@ root = Tk()
 root.title('Assessment 1 Math Quiz - Jonathan Deuel C. Levardo')
 root.geometry('1212x862')
 
-
-# ============================= Variables =============================
-universal_bg_color = '#2B2B2B'
-keeping_score = 0
-
 # For randomizer
 import random
+
+# ============================= GLOBAL VARIABLES =============================
+universal_bg_color = '#2B2B2B'
+chances = 2
+keeping_score = 0
 
 # ============================= IMPORTANT FUNCTIONS =============================
 
@@ -60,7 +60,6 @@ def displayMenu():
 	fg="#000000", bg="#F24E4E", bd=0, highlightthickness=0)
 	hard_btn.place(rely=0.78, relwidth=1, height=190)
 
-
 # Random Operation Function
 def decideOperation():
 
@@ -72,11 +71,6 @@ def decideOperation():
 	operations = ['add', 'sub']
 	decide_math_sign = random.choice(operations)
 	return decide_math_sign
-
-
-# def modifyScore():
-# 	if int(user_entry.get()) == answer_value:
-
 
 # Function for Easy Mode
 def playEasyQuiz():
@@ -96,7 +90,6 @@ def playEasyQuiz():
 	easy_question_box = Frame(easy_quiz_play, bg='#ffffff')
 	easy_question_box.place(rely=0.2, relwidth=1, height=700)
 
-
 	# REFERENCE FOR randint()
 	# GeeksforGeeks. (2026). randint() Function in Python. [online] 
 	# Available at: https://www.geeksforgeeks.org/python/python-randint-function/ 
@@ -114,11 +107,58 @@ def playEasyQuiz():
 		answer_value = value1 - value2
 		math_question = f'{value1} - {value2} = ?'
 
+	# Submission Function
+	def submit():
+		if int(user_entry.get()) == answer_value:
+			verify_answer.config(text = 'Correct', fg='#51E886')
+			
+			#  Create a button that allows to go to the next question
+			proceed_btn = Button(easy_question_box, text="Next", font=('tahoma',10), 
+			fg="#000000", bg="#51E886", command=playEasyQuiz, width=12, bd=0)
+			proceed_btn.place(relx=0.1, rely=0.6)
+		else:
+			verify_answer.config(text = 'Incorrect', fg='#F24E4E')
+			global chances
+			chances -= 1
+
+	# Update Score Function
+	def updateScore():
+
+		# REFERENCE FOR AVOIDING "UnboundLocalError Local variable"
+		# GeeksforGeeks (2024). UnboundLocalError Local variable Referenced Before Assignment in Python [online] 
+		# Available at: https://www.geeksforgeeks.org/python/unboundlocalerror-local-variable-referenced-before-assignment-in-python/ 
+		# [Accessed 18 Nov. 2026].
+
+		# global chances
+		global keeping_score
+
+		if int(user_entry.get()) == answer_value and chances == 2:
+			keeping_score += 10
+
+			# REFERENCE FOR FIXING A PROBLEM WITH THE DISPLAY SCORE NOT UPDATING
+			''' 
+			Google (2026) Google AI Overview on tkinter display updated score [Generative AI output]. 
+			Available at: https://www.google.com/search?q=tkinter+display+updated+score&sca_esv=636445ce43a933d6&sxsrf=AKL5yDjSaECQC
+			nc5lLpidMh1Rsh7GR-ZFA%3A1795021930814&ei=atz9aoKWMdn_7_UP4YCvyQw&biw=1536&bih=825&uact=5&oq=tkinter+display+updated+score&gs_
+			lp=Egxnd3Mtd2l6LXNlcnAiHXRraW50ZXIgZGlzcGxheSB1cGRhdGVkIHNjb3JlMggQABjvBRiwAzIIEAAY7wUYsAMyCxAAGIkFGKIEGLADMggQABjvBRiwAzIIEA
+			AY7wUYsANIpewEUOTkBFiw6wRwAngAkAEAmAGzAqABoQuqAQcwLjEuNC4xuAEDyAEA-AEBmAICoAIJmAMAiAYBkAYFkgcBMqAHihayBwC4BwDCBwMwLjLIBwSACAE&sclient=gws-wiz-serp 
+			(Accessed: 18 Nov. 2026).
+			'''
+			
+			display_score.config(text=f"Score: {keeping_score}")
+
+		elif int(user_entry.get()) == answer_value and chances == 1:
+			keeping_score += 5
+			display_score.config(text=f"Score: {keeping_score}")
+		elif int(user_entry.get()) != answer_value and chances == 0:
+			keeping_score += 0
+			display_score.config(text=f"Score: {keeping_score}")
+
 
 	# Score
-	score = Label(easy_question_box, text=f"Score:{keeping_score}",
+	display_score = Label(easy_question_box, text="Score: 0",
 		bg='#ffffff', fg='#000000', font=('tahoma', 15))
-	score.place(relx=0.1, rely=0.1)
+	display_score.place(relx=0.1, rely=0.1)
 
 	# Question
 	display_question = Label(easy_question_box, text=f"{math_question}",
@@ -134,21 +174,15 @@ def playEasyQuiz():
 	font=('tahoma', 30))
 	verify_answer.place(relx=0.1, rely=0.4)
 
-	# Submission Function
-	def submit():
-		if int(user_entry.get()) == answer_value:
-			verify_answer.config(text = 'Correct', fg='#51E886')
-		else:
-			verify_answer.config(text = 'Incorrect', fg='#F24E4E')
-
-	# Submit Button
-	submit_btn = Button(easy_question_box, text="Test Submit", font=('tahoma',10), 
-	fg="#000000", bg="#51E886", command=submit, width=12, bd=0)
-	submit_btn.place(x=290, rely=0.3)
+	# Being able to submit an answer for points if chances > 0
+	if chances > 0:
+		# Submit Button
+		submit_btn = Button(easy_question_box, text="Submit", font=('tahoma',10), 
+		fg="#000000", bg="#51E886", command=lambda: [submit(), updateScore()], width=12, bd=0)
+		submit_btn.place(x=290, rely=0.3)
 
 
-
-# ============================= MAIN FRAMES =============================
+# ============================= MAIN CONTAINER FRAMES =============================
 
 # Create frame for Title Side of app (left side of window)
 title_side = Frame(root, bg=universal_bg_color)
@@ -171,12 +205,10 @@ display_diff_menu_btn = Button(title_widget, text="Menu", font=('tahoma', 20),
 fg="#ffffff", bg="#000000", command=displayMenu, width=10, bd=0, highlightthickness=0)
 display_diff_menu_btn.place(relx=0.5, rely=0.85, anchor='center')
 
-
 # Create frame for Activity Side of app (right side of window)
 activity_side = Frame(root, bg=universal_bg_color)
 activity_side.pack(side=RIGHT, fill='both', expand=True)
 activity_side.pack_propagate(False)
 activity_side.config(width=727.2) # Size of activity_side
-
 
 root.mainloop()
