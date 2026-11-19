@@ -12,10 +12,11 @@ import random
 universal_bg_color = '#2B2B2B'
 chances = 2
 keeping_score = 0
+questions_complete = 0
 
 # ============================= IMPORTANT FUNCTIONS =============================
 
-# (FROM LECTURE EXERCISE) Delete previous selected pages
+# (FROM LECTURE EXERCISE) Delete previously selected pages
 def delete_prev_pages():
     for frame in activity_side.winfo_children():
         frame.destroy()
@@ -24,6 +25,10 @@ def delete_prev_pages():
 def displayMenu():
 
 	delete_prev_pages()
+
+	# Reset score when entering menu
+	global keeping_score
+	keeping_score = 0
 
 	# Create frame containing contents of Difficulty Menu
 	diff_frame = Frame(activity_side, bg=universal_bg_color)
@@ -77,6 +82,10 @@ def playEasyQuiz():
 
 	delete_prev_pages()
 
+	# Reset when entering a new question
+	global chances
+	chances = 2
+	
 	# Create frame containing contents of the Easy Mode in play
 	easy_quiz_play = Frame(activity_side, bg=universal_bg_color)
 	easy_quiz_play.pack(pady=25, padx=40, fill='both', expand=True)
@@ -90,37 +99,6 @@ def playEasyQuiz():
 	easy_question_box = Frame(easy_quiz_play, bg='#ffffff')
 	easy_question_box.place(rely=0.2, relwidth=1, height=700)
 
-	# REFERENCE FOR randint()
-	# GeeksforGeeks. (2026). randint() Function in Python. [online] 
-	# Available at: https://www.geeksforgeeks.org/python/python-randint-function/ 
-	# [Accessed 14 Nov. 2026].
-
-	# Variables
-	value1 = random.randint(0, 9)
-	value2 = random.randint(0, 9)
-
-	#  Operation decided by decideOperation()
-	if decideOperation() == 'add':
-		answer_value = value1 + value2
-		math_question = f'{value1} + {value2} = ?'
-	else:
-		answer_value = value1 - value2
-		math_question = f'{value1} - {value2} = ?'
-
-	# Submission Function
-	def submit():
-		if int(user_entry.get()) == answer_value:
-			verify_answer.config(text = 'Correct', fg='#51E886')
-			
-			#  Create a button that allows to go to the next question
-			proceed_btn = Button(easy_question_box, text="Next", font=('tahoma',10), 
-			fg="#000000", bg="#51E886", command=playEasyQuiz, width=12, bd=0)
-			proceed_btn.place(relx=0.1, rely=0.6)
-		else:
-			verify_answer.config(text = 'Incorrect', fg='#F24E4E')
-			global chances
-			chances -= 1
-
 	# Update Score Function
 	def updateScore():
 
@@ -128,8 +106,8 @@ def playEasyQuiz():
 		# GeeksforGeeks (2024). UnboundLocalError Local variable Referenced Before Assignment in Python [online] 
 		# Available at: https://www.geeksforgeeks.org/python/unboundlocalerror-local-variable-referenced-before-assignment-in-python/ 
 		# [Accessed 18 Nov. 2026].
-
-		# global chances
+		
+		global chances
 		global keeping_score
 
 		if int(user_entry.get()) == answer_value and chances == 2:
@@ -150,37 +128,79 @@ def playEasyQuiz():
 		elif int(user_entry.get()) == answer_value and chances == 1:
 			keeping_score += 5
 			display_score.config(text=f"Score: {keeping_score}")
-		elif int(user_entry.get()) != answer_value and chances == 0:
+		elif int(user_entry.get()) == answer_value and chances == 0:
 			keeping_score += 0
 			display_score.config(text=f"Score: {keeping_score}")
 
+	# Submission Function
+	def submit():
+		if int(user_entry.get()) == answer_value:
+			verify_answer.config(text = 'Correct', fg='#51E886')
+			
+			# Create a button that allows to go to the next question
+			proceed_btn = Button(easy_question_box, text="Next", font=('tahoma',10), 
+			fg="#000000", bg="#51E886", command=playEasyQuiz, width=12, bd=0)
+			proceed_btn.place(relx=0.1, rely=0.6)
 
-	# Score
-	display_score = Label(easy_question_box, text="Score: 0",
-		bg='#ffffff', fg='#000000', font=('tahoma', 15))
-	display_score.place(relx=0.1, rely=0.1)
+			global questions_complete
+			questions_complete += 1
 
-	# Question
-	display_question = Label(easy_question_box, text=f"{math_question}",
+		else:
+			verify_answer.config(text = 'Incorrect', fg='#F24E4E')
+			global chances
+			chances -= 1
+
+	# If questions_complete < 10, generate a question. Else, show results
+	if questions_complete < 10:
+
+		# REFERENCE FOR randint()
+		# GeeksforGeeks. (2026). randint() Function in Python. [online] 
+		# Available at: https://www.geeksforgeeks.org/python/python-randint-function/ 
+		# [Accessed 14 Nov. 2026].
+
+		# Variables
+		value1 = random.randint(0, 9)
+		value2 = random.randint(0, 9)
+
+		#  Operation decided by decideOperation()
+		if decideOperation() == 'add':
+			answer_value = value1 + value2
+			math_question = f'{value1} + {value2} = ?'
+		else:
+			answer_value = value1 - value2
+			math_question = f'{value1} - {value2} = ?'
+
+		# Question
+		display_question = Label(easy_question_box, text=f"{math_question}",
+			bg='#ffffff', fg='#000000', font=('tahoma', 30))
+		display_question.place(relx=0.1, rely=0.2)
+
+		# Entry
+		user_entry = Entry(easy_question_box, font=('tahoma', 12), bg='#D6D6D6', width=22, bd=0)
+		user_entry.place(relx=0.1, rely=0.3)
+
+		# Output
+		verify_answer = Label(easy_question_box, text="",bg='#ffffff', 
+		font=('tahoma', 30))
+		verify_answer.place(relx=0.1, rely=0.4)
+
+
+		# Being able to submit an answer for points if chances > 0
+		if chances > 0:
+			# Submit Button
+			submit_btn = Button(easy_question_box, text="Submit", font=('tahoma',10), 
+			fg="#000000", bg="#51E886", command=lambda: [submit(), updateScore()], width=12, bd=0)
+			submit_btn.place(x=290, rely=0.3)
+
+	else:
+		display_results = Label(easy_question_box, text=f"Your final grade: A",
 		bg='#ffffff', fg='#000000', font=('tahoma', 30))
-	display_question.place(relx=0.1, rely=0.2)
+		display_results.place(relx=0.1, rely=0.2)
 
-	# Entry
-	user_entry = Entry(easy_question_box, font=('tahoma', 12), bg='#D6D6D6', width=22, bd=0)
-	user_entry.place(relx=0.1, rely=0.3)
-
-	# Output
-	verify_answer = Label(easy_question_box, text="",bg='#ffffff', 
-	font=('tahoma', 30))
-	verify_answer.place(relx=0.1, rely=0.4)
-
-	# Being able to submit an answer for points if chances > 0
-	if chances > 0:
-		# Submit Button
-		submit_btn = Button(easy_question_box, text="Submit", font=('tahoma',10), 
-		fg="#000000", bg="#51E886", command=lambda: [submit(), updateScore()], width=12, bd=0)
-		submit_btn.place(x=290, rely=0.3)
-
+	# Score Display
+	display_score = Label(easy_question_box, text="Score: 0",
+	bg='#ffffff', fg='#000000', font=('tahoma', 15))
+	display_score.place(relx=0.1, rely=0.1)
 
 # ============================= MAIN CONTAINER FRAMES =============================
 
