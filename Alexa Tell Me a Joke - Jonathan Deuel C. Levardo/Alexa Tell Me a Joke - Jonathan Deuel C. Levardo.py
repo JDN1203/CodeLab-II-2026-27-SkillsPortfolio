@@ -61,11 +61,9 @@ def punchline():
 
 # ====================================== SET UP ======================================
 
-global setup_lbl
 setup_lbl = Label(root, text='', font=('tahoma', 10), fg='#000000')
 setup_lbl.pack(padx=10, pady=(10, 0))
 
-global punchline_lbl
 punchline_lbl = Label(root, text='', font=('tahoma', 10), fg='#000000')
 punchline_lbl.pack(padx=10, pady=(10, 0))
 
