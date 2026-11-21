@@ -23,7 +23,7 @@ answer_value = StringVar()
 # GeeksforGeeks (2019). Setting and Retrieving Values of Tkinter Variable Python. [online] GeeksforGeeks. 
 # Available at: https://www.geeksforgeeks.org/python/python-setting-and-retrieving-values-of-tkinter-variable/ 
 # [Accessed 20 Nov. 2026].
-user_answer = IntVar()
+# user_answer = IntVar()
 keeping_score = IntVar()
 
 # easy_mode = False
@@ -102,8 +102,7 @@ def displayMenu():
 	delete_prev_activity_pages()
 
 	# Reset score when entering menu
-	global keeping_score
-	keeping_score = 0
+	# global keeping_score
 
 	# Create frame containing contents of Difficulty Menu
 	diff_frame = Frame(activity_side, bg=universal_bg_color)
@@ -128,7 +127,7 @@ def displayMenu():
 	# Easy Difficulty Menu button
 	easy_btn = Button(diff_frame, text="EASY | Single digit numbers", font=('tahoma', 25), 
 	fg="#000000", bg="#51E886", bd=0, highlightthickness=0, 
-    command=lambda:[quizSetUp(), generateQuestion()])
+    command=lambda:[quizSetUp()])
 	easy_btn.place(rely=0.2, relwidth=1, height=190)
 
 	# Medium Difficulty Menu button
@@ -148,6 +147,19 @@ def displayMenu():
 
 # Generate Random Question Function
 def generateQuestion():
+
+    # REFERENCE FOR AVOIDING "UnboundLocalError Local variable"
+    # GeeksforGeeks (2024). UnboundLocalError Local variable Referenced Before Assignment in Python [online] 
+    # Available at: https://www.geeksforgeeks.org/python/unboundlocalerror-local-variable-referenced-before-assignment-in-python/ 
+    # [Accessed 18 Nov. 2026].
+    
+    #  REFERENCE FOR GLOBAL KEYWORD
+    # W3Schools (n.d.). Python - global variables. [online] www.w3schools.com. 
+    # Available at: https://www.w3schools.com/python/python_variables_global.asp [Accessed 21 Nov. 2026].
+
+    global display_question
+    global chances
+
     value1 = random.randint(0, 9)
     value2 = random.randint(0, 9)
 
@@ -158,41 +170,52 @@ def generateQuestion():
 
     # Destroy Method in TKinter | Remove Widget from Window | Math Quiz Tkinter - 6. (2023). [Video] Directed by Vishesh Programming. YouTube. 
     # Available at: https://www.youtube.com/watch?v=CpH9KSJsibQ [Accessed 20 Nov. 2026].
-
-    global easy_question_box
-
-    # Create Question Label
-    display_question = Label(easy_question_box, text=f"{math_question.get()}",
-    bg='#ffffff', fg='#000000', font=('tahoma', 30))
-    # display_question.place(relx=0.1, rely=0.2)
-    display_question.grid(row=0, column=0)
-
+    
     # Destroy any preexisting display_question label
-    # global display_question
     if display_question:
         display_question.destroy()
 
+    # Destroy any preexisting proceed_btn button
+    if proceed_btn:
+        proceed_btn.destroy()
+
+    # Destroy any preexisting verify_answer label when entering a new question
+    if verify_answer:
+        verify_answer.destroy()
+    
+
+    # REFERENCE REGARDING PADDING PARAMETERS
+    # Prakash Sharma, D. (2026). How to add padding to a tkinter widget only on one side? [online] Tutorialspoint.com. 
+    # Available at: https://www.tutorialspoint.com/article/how-to-add-padding-to-a-tkinter-widget-only-on-one-side [Accessed 21 Nov. 2026].
+
+    # Create Replacement Question Label
+    display_question = Label(easy_question_box, text=f"{math_question.get()}",
+    bg='#ffffff', fg='#000000', font=('tahoma', 30), justify=LEFT)
+    display_question.grid(row=0, column=0, padx=15, pady=(90, 0), sticky='w')
+
+
 # Verify Answer Function
 def verify():
-
-    # REFERENCE FOR AVOIDING "UnboundLocalError Local variable"
-    # GeeksforGeeks (2024). UnboundLocalError Local variable Referenced Before Assignment in Python [online] 
-    # Available at: https://www.geeksforgeeks.org/python/unboundlocalerror-local-variable-referenced-before-assignment-in-python/ 
-    # [Accessed 18 Nov. 2026].
-    
     global chances
-    # global keeping_score
     global questions_complete
-    global easy_question_box
+    global verify_answer # Unsure why it's needed, but it ennsures that it is accessed
+    # global user_entry
 
-    if user_answer.get() == answer_value.get() and chances == 2:
-        # verify_answer.config(text = 'Correct', fg='#51E886')
+    # Destroy any preexisting verify_answer label when entering a new answer
+    if verify_answer:
+        verify_answer.destroy()
 
-        # Create verification message
-        verify_answer = Label(easy_question_box, text="Correct", bg='#51E886', 
-        font=('tahoma', 30))
-        # verify_answer.place(relx=0.1, rely=0.4)
-        verify_answer.grid(row=2, column=0, pady=10)
+    if user_entry.get() == answer_value.get():
+
+        # Create replacement verification message
+        verify_answer = Label(easy_question_box, text="Correct", bg='#ffffff', fg='#51E886',
+        font=('tahoma', 30), justify=LEFT)
+        verify_answer.grid(row=2, column=0, padx=15, pady=(5, 0), sticky='w')
+
+        # Proceed Button
+        proceed_btn = Button(easy_question_box, text="Next", font=('tahoma',10), 
+        fg="#000000", bg="#51E886", command=lambda: [generateQuestion()], width=12, bd=0)
+        proceed_btn.grid(row=3, column=0, padx=15, pady=(15, 0), sticky='w')
 
         # Calculate score based on number of chances left
         if chances == 2:
@@ -205,24 +228,26 @@ def verify():
         questions_complete += 1
 
     else:
-        # verify_answer.config(text = 'Incorrect', fg='#F24E4E')
-
-        # Create verification message
-        verify_answer = Label(easy_question_box, text="Incorrect", bg='#F24E4E', 
-        font=('tahoma', 30))
-        # verify_answer.place(relx=0.1, rely=0.4)
-        verify_answer.grid(row=2, column=0, pady=10)
+        # Create replacement verification message
+        verify_answer = Label(easy_question_box, text="Incorrect", bg='#ffffff', fg='#F24E4E', 
+        font=('tahoma', 30), justify=LEFT)
+        verify_answer.grid(row=2, column=0, padx=15, pady=(5, 0), sticky='w')
 
         chances -= 1
-    
-    # Destroy any preexisting verify_answer label
-    # global verify_answer
-    if verify_answer:
-        verify_answer.destroy()
+
 
 # Function to set up the background for quiz side
 def quizSetUp():
     delete_prev_activity_pages()
+
+	# Reset score when entering menu
+    keeping_score.set(0)
+
+    # So that outside functions can access them
+    global easy_question_box
+    global display_question
+    global verify_answer
+    global user_entry
 
     # Create frame containing contents of the quiz in play
     quiz_play = Frame(activity_side, bg=universal_bg_color)
@@ -238,9 +263,43 @@ def quizSetUp():
     easy_question_box.place(rely=0.2, relwidth=1, height=700)
 
     # Score Display
-    display_score = Label(activity_side, text=f"Score: {keeping_score}", bg='#ffffff', 
+    display_score = Label(easy_question_box, text=f"Score: {keeping_score.get()}", bg='#ffffff', 
     fg='#000000', font=('tahoma', 15))
-    display_score.place(relx=0.3, rely=0.3)
+    display_score.place(x=15, y=20)
+
+    # Question Setup
+    display_question = Label(easy_question_box, text="",
+    bg='#ffffff', fg='#000000', font=('tahoma', 30))
+    display_question.grid(row=0, column=0)
+
+    # Entry
+    user_entry = Entry(easy_question_box, font=('tahoma', 12), bg='#D6D6D6', width=22, bd=0)
+    user_entry.grid(row=1, column=0, padx=(15, 0), pady=10)
+    
+    # Being able to submit an answer for points if chances > 0
+    if chances > 0:
+        # Submit Button
+        submit_btn = Button(easy_question_box, text="Submit", font=('tahoma',10), 
+        fg="#000000", bg="#51E886", command=lambda: [verify()], width=12, bd=0)
+        submit_btn.grid(row=1, column=1, padx=(8, 0), pady=5)
+
+    # Create a button that allows to go to the next question
+    # if user_entry.get() == answer_value.get():
+    global proceed_btn
+
+    # Proceed Button
+    proceed_btn = Button(easy_question_box, bg="#51E886", bd=0)
+    proceed_btn.grid(row=3, column=0, padx=15, pady=(15, 0), sticky='w')
+
+    # Setup verification message
+    verify_answer = Label(easy_question_box, text="", bg='#ffffff', 
+    font=('tahoma', 30))
+    verify_answer.grid(row=2, column=0)
+
+    generateQuestion()
+
+root.mainloop()
+
 
     # Function to show the question
     # def newQuestion():
@@ -250,29 +309,3 @@ def quizSetUp():
     #     # Frame containing the question grid
     #     question_plcement = Frame(easy_question_box, bg='#ffffff')
     #     question_plcement.pack(x=15, y=30)
-
-    # Entry
-    user_entry = Entry(easy_question_box, textvariable=user_answer, font=('tahoma', 12), bg='#D6D6D6', width=22, bd=0)
-    # user_entry.place(relx=0.1, rely=0.3)
-    user_entry.grid(row=1, column=0)
-    
-    # Being able to submit an answer for points if chances > 0
-    if chances > 0:
-        # Submit Button
-        submit_btn = Button(easy_question_box, text="Submit", font=('tahoma',10), 
-        fg="#000000", bg="#51E886", command=lambda: [verify()], width=12, bd=0)
-        # submit_btn.place(x=290, rely=0.3)
-        submit_btn.grid(row=1, column=1)
-
-    # Create a button that allows to go to the next question
-    if user_answer.get() == answer_value.get():
-        # Proceed Button
-        proceed_btn = Button(easy_question_box, text="Next", font=('tahoma',10), 
-        fg="#000000", bg="#51E886", command=lambda: [generateQuestion()], width=12, bd=0)
-        # proceed_btn.place(relx=0.1, rely=0.6)
-        proceed_btn.grid(row=3, column=0, pady=10)
-
-    # newQuestion()
-    generateQuestion()
-
-root.mainloop()
