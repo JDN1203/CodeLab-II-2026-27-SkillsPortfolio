@@ -3,7 +3,7 @@ from PIL import ImageTk, Image
 import random
 
 root = Tk()
-root.title('Assessment 2 Alexa Tell Me a Joke - Jonathan Deuel C. Levardo')
+root.title('Assessment 1 Exercise 2: Alexa Tell Me a Joke - Jonathan Deuel C. Levardo')
 root.geometry('800x600')
 
 # REFERENCE ON HOW TO CHANGE ROOT BACKGROUND COLOR

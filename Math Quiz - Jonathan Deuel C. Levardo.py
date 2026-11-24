@@ -2,7 +2,7 @@
 from tkinter import *
 
 root = Tk()
-root.title('Assessment 1 Math Quiz - Jonathan Deuel C. Levardo')
+root.title('Assessment 1 Exercise 1: Math Quiz - Jonathan Deuel C. Levardo')
 root.geometry('1212x862')
 
 # For randomizer
