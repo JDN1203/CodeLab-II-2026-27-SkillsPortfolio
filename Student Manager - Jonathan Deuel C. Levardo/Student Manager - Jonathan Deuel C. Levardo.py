@@ -4,7 +4,28 @@ import random
 
 root = Tk()
 root.title('Assessment 1 Exercise 3: Student Manager - Jonathan Deuel C. Levardo')
-root.geometry('1440x1024')
+root.geometry('1440x1100')
+
+# ============================= GLOBAL VARIABLES =============================
+student_frame_bg = '#ffde59'
+data_label_frame_bg = '#fff6d0'
+summery_bg = '#2f3489'
+
+
+# ============================= SETUP BACKGROUND =============================
+
+# REFERENCE FOR USING IMAGE AS BACKGROUND
+# GeeksforGeeks (2020). How to Use Images as Backgrounds in Tkinter? [online] 
+# Available at: https://www.geeksforgeeks.org/python/how-to-use-images-as-backgrounds-in-tkinter/ [Accessed 24 Nov. 2026].
+# Open image file
+
+main_background = ImageTk.PhotoImage(Image.open('Exercise 3 Background (1089 x 900 px).png'))
+
+display_background = Label(root, image=main_background)
+display_background.place(relx=0.5, rely=0.5, relwidth=1, relheight=1, anchor=CENTER)
+
+
+# ============================= OPENING TEXT FILE AND CREATING LISTS AND DICTIONARIES =============================
 
 # REFERENCE FOR TURNING A TEXT FILE INTO A LIST
 # socal_nerdtastic (2020). ‘Ok, I’ll take a guess:...’. [Comment on online forum post] Reddit. 
@@ -44,9 +65,6 @@ with open('studentMarks.txt') as data_file:
     # A list of lists of student data which is also written as a list containing 
     # ID, Name, Total Coursework Mark, Exam mark, Overall Percantage, and Grade 
     data_list_of_lists = [student_data.split(',') for student_data in data_list]
-
-def displayData(call_student):
-    print(data_list_of_lists[call_student][0])
 
 # Convert list of lists into a dictionary
 student_data_for_use = {
@@ -99,6 +117,9 @@ student_data_for_use = {
     ],
 }
 
+
+# ============================= CLASSES AND FUNCTIONS =============================
+
 # Variable to be used for indexing student data
 highest_mark_index = None
 lowest_mark_index = None
@@ -138,15 +159,172 @@ def find_Lowest_Percentage_Index():
 
             break
 
-find_Highest_Percentage_Index()
+# find_Highest_Percentage_Index()
 
-# Get rest of data from the same sutdent
-print(student_data_for_use['name'][highest_mark_index])
+# # Get rest of data from the same sutdent
+# print(student_data_for_use['name'][highest_mark_index])
 
-find_Lowest_Percentage_Index()
-print(student_data_for_use['name'][lowest_mark_index])
-
-# print(student_data_for_use['grade'][5])
+# find_Lowest_Percentage_Index()
+# print(student_data_for_use['name'][lowest_mark_index])
 
 
-# root.mainloop()
+# REFERENCES ON HOW TO USE CLASSES IN TKINTER
+# Using Tkinter with Classes. (2022). [Video] Directed by Atlas. YouTube. 
+# Available at: https://www.youtube.com/watch?v=eaxPK9VIkFM [Accessed 27 Nov. 2026].
+
+# GeeksforGeeks (2019). Python Classes and Objects. [online] 
+# Available at: https://www.geeksforgeeks.org/python/python-classes-and-objects/ [Accessed 27 Nov. 2026].
+
+class dataLabels:
+    def __init__(self, x_place, y_place):
+    
+        self.data_labels_frame = Frame(display_background, width=547.6, height=33.8, bg=data_label_frame_bg)
+        self.data_labels_frame.place(relx=x_place, rely=y_place, anchor=CENTER)
+
+        self.id_label = Label(self.data_labels_frame, text='Number', font=('Roboto', 9), bg=data_label_frame_bg, 
+        justify=LEFT)
+        self.id_label.place(x=10.8, rely=0.5, anchor=W)
+
+        self.name_label = Label(self.data_labels_frame, text='Name', font=('Roboto', 9), bg=data_label_frame_bg, 
+        justify=LEFT)
+        self.name_label.place(x=88.2, rely=0.5, anchor=W)
+
+        self.coursework_mark_label = Label(self.data_labels_frame, text='Coursework \nmark', font=('Roboto', 9), 
+        bg=data_label_frame_bg, justify=LEFT)
+        self.coursework_mark_label.place(x=264.5, rely=0.5, anchor=W)
+
+        self.exam_mark_label = Label(self.data_labels_frame, text='Exam \nmark', font=('Roboto', 9), 
+        bg=data_label_frame_bg, justify=LEFT)
+        self.exam_mark_label.place(x=355.6, rely=0.5, anchor=W)
+
+        self.overall_percent_label = Label(self.data_labels_frame, text='Percent', font=('Roboto', 9), 
+        bg=data_label_frame_bg, justify=LEFT)
+        self.overall_percent_label.place(x=413.5, rely=0.5, anchor=W)
+
+        self.grade_label = Label(self.data_labels_frame, text='Grade', font=('Roboto', 9), 
+        bg=data_label_frame_bg, justify=LEFT)
+        self.grade_label.place(x=478.2, rely=0.5, anchor=W)
+
+class studentList:
+    def __init__(self, index, x_place, y_place):
+
+        # REFERENCE FOR BORDER STYLE
+        # Joshi, I. (2021). ‘change the options accordingly highlightbackground is used to change the...’. [Comment on online forum post] Stack Overflow. 
+        # Available at: https://stackoverflow.com/questions/50691267/how-to-add-a-border-for-a-frame-in-python-tkinter [Accessed 27 Nov. 2026].
+
+        # Frame containing student data
+        self.student_frame = Frame(display_background, width=547.6, height=33.8, bg=student_frame_bg, 
+        highlightthickness=1, highlightbackground='black')
+        self.student_frame.place(relx=x_place, rely=y_place, anchor=CENTER)
+
+        # Student ID
+        self.student_id = Label(self.student_frame, text=f'{student_data_for_use['id'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_id.place(x=10.8, rely=0.5, anchor=W)
+
+        # Student Name
+        self.student_name = Label(self.student_frame, text=f'{student_data_for_use['name'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_name.place(x=88.2, rely=0.5, anchor=W)
+
+        # Student Total Coursework Mark
+        self.student_coursework_mark = Label(self.student_frame, text=f'{student_data_for_use['total coursework mark'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_coursework_mark.place(x=264.5, rely=0.5, anchor=W)
+
+        # Student Exam Mark
+        self.student_exam_mark = Label(self.student_frame, text=f'{student_data_for_use['exam mark'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_exam_mark.place(x=355.6, rely=0.5, anchor=W)
+
+        # Student Percent
+        self.student_overall_percent = Label(self.student_frame, text=f'{student_data_for_use['overall percentage'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_overall_percent.place(x=413.5, rely=0.5, anchor=W)
+
+        # Student Grade
+        self.student_grade = Label(self.student_frame, text=f'{student_data_for_use['grade'][index]}', 
+        font=('Roboto', 10), bg=student_frame_bg)
+        self.student_grade.place(x=478.2, rely=0.5, anchor=W)
+
+def allStudents():
+
+    call_labels = dataLabels(0.39, 0.29)
+    call_labels.data_labels_frame
+
+    student1 = studentList(0, 0.39, 0.35)
+    student1.student_frame
+
+    student2 = studentList(1, 0.39, 0.4)
+    student2.student_frame
+
+    student3 = studentList(2, 0.39, 0.45)
+    student3.student_frame
+
+    student4 = studentList(3, 0.39, 0.5)
+    student4.student_frame
+
+    student5 = studentList(4, 0.39, 0.55)
+    student5.student_frame
+
+    student6 = studentList(5, 0.39, 0.6)
+    student6.student_frame
+
+    student7 = studentList(6, 0.39, 0.65)
+    student7.student_frame
+
+    student8 = studentList(7, 0.39, 0.7)
+    student8.student_frame
+
+    student9 = studentList(8, 0.39, 0.75)
+    student9.student_frame
+
+    student10 = studentList(9, 0.39, 0.8)
+    student10.student_frame
+
+def displayData(call_student):
+    print(data_list_of_lists[call_student][0])
+
+def calcuate_Average_Percent():
+
+    # REFERENCE FOR sum()
+    # GeeksforGeeks (2018). Find Sum of Elements in List Python. [online] 
+    # Available at: https://www.geeksforgeeks.org/python/python-program-to-find-sum-of-elements-in-list/  [Accessed 27 Nov. 2026].
+
+    average_value = sum(student_data_for_use['overall percentage']) / len(student_data_for_use['overall percentage'])
+    return average_value
+
+
+allStudents()
+
+# ============================= SUMMARY AND OPTIONS =============================
+
+# Summary Section
+summary_frame = Frame(display_background, bg=data_label_frame_bg)
+summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
+
+num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
+bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+num_of_students.pack(pady=5)
+
+average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
+bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+average_percent.pack(pady=5)
+
+# Viewing Options
+viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
+
+all_records_btn = Button(viewing_btns_frame, text='View All Records', font=('Roboto', 15), 
+bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
+all_records_btn.pack(pady=5)
+
+highest_mark_btn = Button(viewing_btns_frame, text='View Highest Mark', font=('Roboto', 15), 
+bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
+highest_mark_btn.pack(pady=5)
+
+lowest_mark_btn = Button(viewing_btns_frame, text='View Lowest Mark', font=('Roboto', 15), 
+bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
+lowest_mark_btn.pack(pady=5)
+
+root.mainloop()
