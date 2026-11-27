@@ -11,6 +11,9 @@ student_frame_bg = '#ffde59'
 data_label_frame_bg = '#fff6d0'
 summery_bg = '#2f3489'
 
+# Variable to be used for indexing data for students with the highest mark and lowest mark
+highest_mark_index = None
+lowest_mark_index = None
 
 # ============================= SETUP BACKGROUND =============================
 
@@ -120,54 +123,6 @@ student_data_for_use = {
 
 # ============================= CLASSES AND FUNCTIONS =============================
 
-# Variable to be used for indexing student data
-highest_mark_index = None
-lowest_mark_index = None
-
-def find_Highest_Percentage_Index():
-
-    # REFERENCE FOR ACCESSING ITEMS IN LISTS WITHIN DICTIONARIES
-    # GeeksforGeeks (2021). Python Accessing Items in Lists Within Dictionary. [online] 
-    # Available at: https://www.geeksforgeeks.org/python/python-accessing-items-in-lists-within-dictionary/ [Accessed 26 Nov. 2026].
-
-    for index, value in enumerate(student_data_for_use['overall percentage']):
-
-        # If overall percentage is the highest value
-        if student_data_for_use['overall percentage'][index] == max(student_data_for_use['overall percentage']):
-
-            print(f'the highest percentage is {value}% at index {index}')
-
-            # Update highest_mark_index
-            global highest_mark_index
-            highest_mark_index = index
-            return highest_mark_index
-
-            break
-
-def find_Lowest_Percentage_Index():
-    for index, value in enumerate(student_data_for_use['overall percentage']):
-
-    # If overall percentage is the highest value
-        if student_data_for_use['overall percentage'][index] == min(student_data_for_use['overall percentage']):
-
-            print(f'the lowest percentage is {value}% at index {index}')
-
-            # Update lowest_mark_index
-            global lowest_mark_index
-            lowest_mark_index = index
-            return lowest_mark_index
-
-            break
-
-# find_Highest_Percentage_Index()
-
-# # Get rest of data from the same sutdent
-# print(student_data_for_use['name'][highest_mark_index])
-
-# find_Lowest_Percentage_Index()
-# print(student_data_for_use['name'][lowest_mark_index])
-
-
 # REFERENCES ON HOW TO USE CLASSES IN TKINTER
 # Using Tkinter with Classes. (2022). [Video] Directed by Atlas. YouTube. 
 # Available at: https://www.youtube.com/watch?v=eaxPK9VIkFM [Accessed 27 Nov. 2026].
@@ -175,6 +130,7 @@ def find_Lowest_Percentage_Index():
 # GeeksforGeeks (2019). Python Classes and Objects. [online] 
 # Available at: https://www.geeksforgeeks.org/python/python-classes-and-objects/ [Accessed 27 Nov. 2026].
 
+# Class containing labels for all student data
 class dataLabels:
     def __init__(self, x_place, y_place):
     
@@ -205,6 +161,7 @@ class dataLabels:
         bg=data_label_frame_bg, justify=LEFT)
         self.grade_label.place(x=478.2, rely=0.5, anchor=W)
 
+# Class containing widgets showing all student data
 class studentList:
     def __init__(self, index, x_place, y_place):
 
@@ -247,7 +204,92 @@ class studentList:
         font=('Roboto', 10), bg=student_frame_bg)
         self.student_grade.place(x=478.2, rely=0.5, anchor=W)
 
-def allStudents():
+# Function for deleting content
+def delete_Prev_Content():
+    for frame in display_background.winfo_children():
+        frame.destroy()
+
+# Function for finding the index of highest mark
+def find_Highest_Percentage_Index():
+
+    # REFERENCE FOR ACCESSING ITEMS IN LISTS WITHIN DICTIONARIES
+    # GeeksforGeeks (2021). Python Accessing Items in Lists Within Dictionary. [online] 
+    # Available at: https://www.geeksforgeeks.org/python/python-accessing-items-in-lists-within-dictionary/ [Accessed 26 Nov. 2026].
+
+    for index, value in enumerate(student_data_for_use['overall percentage']):
+
+        # If overall percentage is the highest value
+        if student_data_for_use['overall percentage'][index] == max(student_data_for_use['overall percentage']):
+
+            # Update highest_mark_index
+            global highest_mark_index
+            highest_mark_index = index
+            return highest_mark_index
+
+            break
+
+# Function for finding the index of lowest mark
+def find_Lowest_Percentage_Index():
+    for index, value in enumerate(student_data_for_use['overall percentage']):
+
+    # If overall percentage is the lowest value
+        if student_data_for_use['overall percentage'][index] == min(student_data_for_use['overall percentage']):
+
+            # Update lowest_mark_index
+            global lowest_mark_index
+            lowest_mark_index = index
+            return lowest_mark_index
+
+            break
+
+# Function for displaying all srudent data
+def displayStudents():
+
+    delete_Prev_Content()
+
+    # ============================= SUMMARY AND OPTIONS =============================
+
+    # Summary Section
+    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
+
+    num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    num_of_students.pack(pady=(0, 10))
+
+    average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    average_percent.pack()
+
+
+    # Viewing Options
+    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
+
+    # REFERENCE FOR BUTTON STYLING
+    # GeeksforGeeks (2021). How to Add a Border Color to a Button in Tkinter? [online] 
+    # Available at: https://www.geeksforgeeks.org/python/how-to-add-a-border-color-to-a-button-in-tkinter/ [Accessed 27 Nov. 2026].
+
+    all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    all_records_btn_frame.pack(pady=(0, 10))
+    all_records_btn = Button(all_records_btn_frame, text='View All Records', font=('Roboto', 15), 
+    bg=student_frame_bg, fg='#000000', width=20, height=2, bd=0, command=lambda: [displayStudents()])
+    all_records_btn.pack()
+
+    highest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    highest_mark_btn_frame.pack(pady=(0, 10))
+    highest_mark_btn = Button(highest_mark_btn_frame, text='View Highest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Highest_Percentage()])
+    highest_mark_btn.pack()
+
+    lowest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    lowest_mark_btn_frame.pack()
+    lowest_mark_btn = Button(lowest_mark_btn_frame, text='View Lowest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Lowest_Percentage()])
+    lowest_mark_btn.pack()
+
+
+    # ============================= CLASSES CREATING OBJECTS =============================
 
     call_labels = dataLabels(0.39, 0.29)
     call_labels.data_labels_frame
@@ -282,9 +324,112 @@ def allStudents():
     student10 = studentList(9, 0.39, 0.8)
     student10.student_frame
 
-def displayData(call_student):
-    print(data_list_of_lists[call_student][0])
+# Function for displaying student with the highest mark
+def display_Highest_Percentage():
+    
+    delete_Prev_Content()
+    find_Highest_Percentage_Index()
 
+    # ============================= SUMMARY AND OPTIONS =============================
+
+    # Summary Section
+    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
+
+    num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    num_of_students.pack(pady=(0, 10))
+
+    average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    average_percent.pack()
+
+
+    # Viewing Options
+    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
+
+    all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    all_records_btn_frame.pack(pady=(0, 10))
+    all_records_btn = Button(all_records_btn_frame, text='View All Records', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [displayStudents()])
+    all_records_btn.pack()
+
+    highest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    highest_mark_btn_frame.pack(pady=(0, 10))
+    highest_mark_btn = Button(highest_mark_btn_frame, text='View Highest Mark', font=('Roboto', 15), 
+    bg=student_frame_bg, fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Highest_Percentage()])
+    highest_mark_btn.pack()
+
+    lowest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    lowest_mark_btn_frame.pack()
+    lowest_mark_btn = Button(lowest_mark_btn_frame, text='View Lowest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Lowest_Percentage()])
+    lowest_mark_btn.pack()
+
+    # ============================= CLASSES CREATING OBJECTS =============================
+
+    call_labels = dataLabels(0.39, 0.29)
+    call_labels.data_labels_frame
+
+    student_highest_mark = studentList(highest_mark_index, 0.39, 0.35)
+    student_highest_mark.student_frame
+
+# Function for displaying student with the lowest mark
+def display_Lowest_Percentage():
+
+    delete_Prev_Content()
+    find_Lowest_Percentage_Index()
+
+    # ============================= SUMMARY AND OPTIONS =============================
+
+    # Summary Section
+    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
+
+    num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    num_of_students.pack(pady=(0, 10))
+
+    average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    average_percent.pack()
+
+
+    # Viewing Options
+    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
+
+    all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    all_records_btn_frame.pack(pady=(0, 10))
+    all_records_btn = Button(all_records_btn_frame, text='View All Records', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [displayStudents()])
+    all_records_btn.pack()
+
+    highest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    highest_mark_btn_frame.pack(pady=(0, 10))
+    highest_mark_btn = Button(highest_mark_btn_frame, text='View Highest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Highest_Percentage()])
+    highest_mark_btn.pack()
+
+    lowest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    lowest_mark_btn_frame.pack()
+    lowest_mark_btn = Button(lowest_mark_btn_frame, text='View Lowest Mark', font=('Roboto', 15), 
+    bg=student_frame_bg, fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Lowest_Percentage()])
+    lowest_mark_btn.pack()
+
+    # ============================= CLASSES CREATING OBJECTS =============================
+
+    call_labels = dataLabels(0.39, 0.29)
+    call_labels.data_labels_frame
+
+    student_lowest_mark = studentList(lowest_mark_index, 0.39, 0.35)
+    student_lowest_mark.student_frame    
+
+# def displayData(call_student):
+#     print(data_list_of_lists[call_student][0])
+
+# Function for calculating average overall percentage
 def calcuate_Average_Percent():
 
     # REFERENCE FOR sum()
@@ -294,37 +439,6 @@ def calcuate_Average_Percent():
     average_value = sum(student_data_for_use['overall percentage']) / len(student_data_for_use['overall percentage'])
     return average_value
 
-
-allStudents()
-
-# ============================= SUMMARY AND OPTIONS =============================
-
-# Summary Section
-summary_frame = Frame(display_background, bg=data_label_frame_bg)
-summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
-
-num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
-bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
-num_of_students.pack(pady=5)
-
-average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
-bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
-average_percent.pack(pady=5)
-
-# Viewing Options
-viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
-viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
-
-all_records_btn = Button(viewing_btns_frame, text='View All Records', font=('Roboto', 15), 
-bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
-all_records_btn.pack(pady=5)
-
-highest_mark_btn = Button(viewing_btns_frame, text='View Highest Mark', font=('Roboto', 15), 
-bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
-highest_mark_btn.pack(pady=5)
-
-lowest_mark_btn = Button(viewing_btns_frame, text='View Lowest Mark', font=('Roboto', 15), 
-bg='#ffffff', fg='#000000', width=20, height=2, highlightthickness=1, highlightbackground='black', bd=0)
-lowest_mark_btn.pack(pady=5)
+displayStudents()
 
 root.mainloop()
