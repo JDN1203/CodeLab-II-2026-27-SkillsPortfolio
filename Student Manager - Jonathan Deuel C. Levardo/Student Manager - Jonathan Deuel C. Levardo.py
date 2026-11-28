@@ -8,25 +8,30 @@ root.geometry('1440x1100')
 
 # ============================= GLOBAL VARIABLES =============================
 student_frame_bg = '#ffde59'
-data_label_frame_bg = '#fff6d0'
+data_frame_bg = '#fff6d0'
 summery_bg = '#2f3489'
 
 # Variable to be used for indexing data for students with the highest mark and lowest mark
 highest_mark_index = None
 lowest_mark_index = None
 
-# ============================= SETUP BACKGROUND =============================
+# ============================= SETUP IMAGES =============================
 
-# REFERENCE FOR USING IMAGE AS BACKGROUND
-# GeeksforGeeks (2020). How to Use Images as Backgrounds in Tkinter? [online] 
-# Available at: https://www.geeksforgeeks.org/python/how-to-use-images-as-backgrounds-in-tkinter/ [Accessed 24 Nov. 2026].
-# Open image file
+# REFERENCE ON FIXING IMAGE DISPLAY ISSUES
+# Nawaz Dhandala (2026). How to Fix Tkinter Image Display Issues. [online] OneUptime | One Complete Observability Platform. 
+# Available at: https://oneuptime.com/blog/post/2026-01-25-fix-tkinter-image-display-issues/view [Accessed 28 Nov. 2026].
 
-main_background = ImageTk.PhotoImage(Image.open('Exercise 3 Background (1089 x 900 px).png'))
+def create_Image_Label(parent, image_path):
+    new_image = Image.open(image_path)
+    photo = ImageTk.PhotoImage(new_image)
 
-display_background = Label(root, image=main_background)
+    image_label = Label(parent, image=photo, borderwidth=0)
+    image_label.image = photo
+    return image_label
+
+# Main Background
+display_background = create_Image_Label(root, 'Exercise 3 Background (1089 x 900 px).png')
 display_background.place(relx=0.5, rely=0.5, relwidth=1, relheight=1, anchor=CENTER)
-
 
 # ============================= OPENING TEXT FILE AND CREATING LISTS AND DICTIONARIES =============================
 
@@ -134,31 +139,31 @@ student_data_for_use = {
 class dataLabels:
     def __init__(self, x_place, y_place):
     
-        self.data_labels_frame = Frame(display_background, width=547.6, height=33.8, bg=data_label_frame_bg)
+        self.data_labels_frame = Frame(display_background, width=547.6, height=33.8, bg=data_frame_bg)
         self.data_labels_frame.place(relx=x_place, rely=y_place, anchor=CENTER)
 
-        self.id_label = Label(self.data_labels_frame, text='Number', font=('Roboto', 9), bg=data_label_frame_bg, 
+        self.id_label = Label(self.data_labels_frame, text='Number', font=('Roboto', 9), bg=data_frame_bg, 
         justify=LEFT)
         self.id_label.place(x=10.8, rely=0.5, anchor=W)
 
-        self.name_label = Label(self.data_labels_frame, text='Name', font=('Roboto', 9), bg=data_label_frame_bg, 
+        self.name_label = Label(self.data_labels_frame, text='Name', font=('Roboto', 9), bg=data_frame_bg, 
         justify=LEFT)
         self.name_label.place(x=88.2, rely=0.5, anchor=W)
 
         self.coursework_mark_label = Label(self.data_labels_frame, text='Coursework \nmark', font=('Roboto', 9), 
-        bg=data_label_frame_bg, justify=LEFT)
+        bg=data_frame_bg, justify=LEFT)
         self.coursework_mark_label.place(x=264.5, rely=0.5, anchor=W)
 
         self.exam_mark_label = Label(self.data_labels_frame, text='Exam \nmark', font=('Roboto', 9), 
-        bg=data_label_frame_bg, justify=LEFT)
+        bg=data_frame_bg, justify=LEFT)
         self.exam_mark_label.place(x=355.6, rely=0.5, anchor=W)
 
         self.overall_percent_label = Label(self.data_labels_frame, text='Percent', font=('Roboto', 9), 
-        bg=data_label_frame_bg, justify=LEFT)
+        bg=data_frame_bg, justify=LEFT)
         self.overall_percent_label.place(x=413.5, rely=0.5, anchor=W)
 
         self.grade_label = Label(self.data_labels_frame, text='Grade', font=('Roboto', 9), 
-        bg=data_label_frame_bg, justify=LEFT)
+        bg=data_frame_bg, justify=LEFT)
         self.grade_label.place(x=478.2, rely=0.5, anchor=W)
 
 # Class containing widgets showing all student data
@@ -173,6 +178,15 @@ class studentList:
         self.student_frame = Frame(display_background, width=547.6, height=33.8, bg=student_frame_bg, 
         highlightthickness=1, highlightbackground='black')
         self.student_frame.place(relx=x_place, rely=y_place, anchor=CENTER)
+
+        # REFERENCE FOR TURNING A FRAME INTO A BUTTON
+        # furas (2018). ‘You can use bind(‘<Button-1>’, callback) to assign click to widgets. You...’. [Comment on online forum post] Stack Overflow. 
+        # Available at: https://stackoverflow.com/questions/48144228/how-to-create-a-python-tkinter-frame-with-button-like-functionality [Accessed 28 Nov. 2026].
+        
+        # REFERENCE FOR APPLYING lambda: TO bind()
+        # Brown, S. (2018). ‘The problem is that bind() expects a function which will...’. [Comment on online forum post] Python. 
+        # Available at: https://discuss.python.org/t/how-to-add-bind-key-to-widget-when-callback-method-is-not-user-defined-method/38929/2 [Accessed 28 Nov. 2026].
+        self.student_frame.bind('<Button-1>', lambda event: [display_Specific_Student(index)])
 
         # Student ID
         self.student_id = Label(self.student_frame, text=f'{student_data_for_use['id'][index]}', 
@@ -200,9 +214,22 @@ class studentList:
         self.student_overall_percent.place(x=413.5, rely=0.5, anchor=W)
 
         # Student Grade
-        self.student_grade = Label(self.student_frame, text=f'{student_data_for_use['grade'][index]}', 
+        self.student_grade = Label(self.student_frame, text='', 
         font=('Roboto', 10), bg=student_frame_bg)
         self.student_grade.place(x=478.2, rely=0.5, anchor=W)
+
+        # Calculate Grade
+        if student_data_for_use['grade'][index] >= 70:
+            self.student_grade.config(text=f'{student_data_for_use['grade'][index]} | A')
+        elif student_data_for_use['grade'][index] >= 60:
+            self.student_grade.config(text=f'{student_data_for_use['grade'][index]} | B')
+        elif student_data_for_use['grade'][index] >= 50:
+            self.student_grade.config(text=f'{student_data_for_use['grade'][index]} | C')
+        elif student_data_for_use['grade'][index] >= 40:
+            self.student_grade.config(text=f'{student_data_for_use['grade'][index]} | D')
+        elif student_data_for_use['grade'][index] <= 40:
+            self.student_grade.config(text=f'{student_data_for_use['grade'][index]} | F')
+
 
 # Function for deleting content
 def delete_Prev_Content():
@@ -250,7 +277,7 @@ def displayStudents():
     # ============================= SUMMARY AND OPTIONS =============================
 
     # Summary Section
-    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame = Frame(display_background, bg=data_frame_bg)
     summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
 
     num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
@@ -263,7 +290,7 @@ def displayStudents():
 
 
     # Viewing Options
-    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame = Frame(display_background, bg=data_frame_bg)
     viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
 
     # REFERENCE FOR BUTTON STYLING
@@ -333,7 +360,7 @@ def display_Highest_Percentage():
     # ============================= SUMMARY AND OPTIONS =============================
 
     # Summary Section
-    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame = Frame(display_background, bg=data_frame_bg)
     summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
 
     num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
@@ -346,7 +373,7 @@ def display_Highest_Percentage():
 
 
     # Viewing Options
-    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame = Frame(display_background, bg=data_frame_bg)
     viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
 
     all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
@@ -384,7 +411,7 @@ def display_Lowest_Percentage():
     # ============================= SUMMARY AND OPTIONS =============================
 
     # Summary Section
-    summary_frame = Frame(display_background, bg=data_label_frame_bg)
+    summary_frame = Frame(display_background, bg=data_frame_bg)
     summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
 
     num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
@@ -397,7 +424,7 @@ def display_Lowest_Percentage():
 
 
     # Viewing Options
-    viewing_btns_frame = Frame(display_background, bg=data_label_frame_bg)
+    viewing_btns_frame = Frame(display_background, bg=data_frame_bg)
     viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
 
     all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
@@ -426,9 +453,6 @@ def display_Lowest_Percentage():
     student_lowest_mark = studentList(lowest_mark_index, 0.39, 0.35)
     student_lowest_mark.student_frame    
 
-# def displayData(call_student):
-#     print(data_list_of_lists[call_student][0])
-
 # Function for calculating average overall percentage
 def calcuate_Average_Percent():
 
@@ -438,6 +462,124 @@ def calcuate_Average_Percent():
 
     average_value = sum(student_data_for_use['overall percentage']) / len(student_data_for_use['overall percentage'])
     return average_value
+
+def display_Specific_Student(call_student):
+
+    delete_Prev_Content()
+    
+    # Summary Section
+    summary_frame = Frame(display_background, bg=data_frame_bg)
+    summary_frame.place(relx=0.695, rely=0.35, anchor=CENTER)
+
+    num_of_students = Label(summary_frame, text=f'Number of students: {len(student_data_for_use['name'])}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    num_of_students.pack(pady=(0, 10))
+
+    average_percent = Label(summary_frame, text=f'Average percent: {calcuate_Average_Percent()}', font=('Roboto', 15), 
+    bg=summery_bg, fg='#ffde59', width=20, height=2, highlightthickness=1, highlightbackground='black')
+    average_percent.pack()
+
+
+    # Viewing Options
+    viewing_btns_frame = Frame(display_background, bg=data_frame_bg)
+    viewing_btns_frame.place(relx=0.695, rely=0.575, anchor=CENTER)
+
+    all_records_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    all_records_btn_frame.pack(pady=(0, 10))
+    all_records_btn = Button(all_records_btn_frame, text='View All Records', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [displayStudents()])
+    all_records_btn.pack()
+
+    highest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    highest_mark_btn_frame.pack(pady=(0, 10))
+    highest_mark_btn = Button(highest_mark_btn_frame, text='View Highest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Highest_Percentage()])
+    highest_mark_btn.pack()
+
+    lowest_mark_btn_frame = Frame(viewing_btns_frame, highlightthickness=1, highlightbackground='black')
+    lowest_mark_btn_frame.pack()
+    lowest_mark_btn = Button(lowest_mark_btn_frame, text='View Lowest Mark', font=('Roboto', 15), 
+    bg='#ffffff', fg='#000000', width=20, height=2, bd=0, command=lambda: [display_Lowest_Percentage()])
+    lowest_mark_btn.pack()
+
+    # Frame containing content
+    specific_student_frame = Frame(display_background, bg=data_frame_bg)
+    specific_student_frame.place(relx=0.37, rely=0.53, anchor=CENTER)
+
+    # REFERENCE ON HOW TO MAKE A LABEL BOLD
+    # GeeksforGeeks (2024). How to Make a Label Bold Tkinter? [online]
+    # Available at: https://www.geeksforgeeks.org/python/how-to-make-a-label-bold-tkinter/ [Accessed 24 Nov. 2026].
+
+    # Student Name
+    specific_name = Label(specific_student_frame, text=f'{student_data_for_use['name'][call_student]}', 
+    font=('Roboto', 27, 'bold'), bg=data_frame_bg, fg=summery_bg)
+    specific_name.grid(row=0, column=0, sticky=W, pady=(0, 80))
+
+    # Student Grade
+    if student_data_for_use['grade'][call_student] >= 70:
+        specific_grade = create_Image_Label(display_background, 'Grade A (97x97).png')
+        specific_grade.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+    elif student_data_for_use['grade'][call_student] >= 60:
+        specific_grade = create_Image_Label(display_background, 'Grade B (97x97).png')
+        specific_grade.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+    elif student_data_for_use['grade'][call_student] >= 50:
+        specific_grade = create_Image_Label(display_background, 'Grade C (97x97).png')
+        specific_grade.place(relx=0.5, rely=0.35, anchor=CENTER)
+        
+    elif student_data_for_use['grade'][call_student] >= 40:
+        specific_grade = create_Image_Label(display_background, 'Grade D (97x97).png')
+        specific_grade.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+    elif student_data_for_use['grade'][call_student] <= 40:
+        specific_grade = create_Image_Label(display_background, 'Grade F (97x97).png')
+        specific_grade.place(relx=0.5, rely=0.35, anchor=CENTER)
+
+    # Student Number
+    specific_number_label = Label(specific_student_frame, text='Student number:', font=('Roboto', 17), 
+    bg=student_frame_bg, fg='#000000', highlightthickness=1, highlightbackground='black')
+    specific_number_label.grid(row=1, column=0, sticky=W, ipadx=26, ipady=4, pady=(0, 10))
+
+    specific_number = Label(specific_student_frame, text=f'{student_data_for_use['id'][call_student]}', font=('Roboto', 17), 
+    bg=summery_bg, fg='#ffffff', highlightthickness=1, highlightbackground='black')
+    specific_number.grid(row=1, column=1, sticky=W, ipadx=16, ipady=4, padx=(50, 0), pady=(0, 10))
+
+    # Student Total Coursework Mark
+    specific_coursework_mark_label = Label(specific_student_frame, text='Total Coursework Mark:', font=('Roboto', 17), 
+    bg=student_frame_bg, fg='#000000', highlightthickness=1, highlightbackground='black')
+    specific_coursework_mark_label.grid(row=2, column=0, sticky=W, ipadx=26, ipady=4, pady=(0, 10))
+
+    specific_coursework_mark = Label(specific_student_frame, text=f'{student_data_for_use['total coursework mark'][call_student]}', 
+    font=('Roboto', 17), bg=summery_bg, fg='#ffffff', highlightthickness=1, highlightbackground='black')
+    specific_coursework_mark.grid(row=2, column=1, sticky=W, ipadx=16, ipady=4, padx=(50, 0), pady=(0, 10))
+
+    # Student Exam Mark
+    specific_exam_mark_label = Label(specific_student_frame, text='Exam Mark:', font=('Roboto', 17), 
+    bg=student_frame_bg, fg='#000000', highlightthickness=1, highlightbackground='black')
+    specific_exam_mark_label.grid(row=3, column=0, sticky=W, ipadx=26, ipady=4, pady=(0, 10))
+
+    specific_exam_mark = Label(specific_student_frame, text=f'{student_data_for_use['exam mark'][call_student]}', 
+    font=('Roboto', 17), bg=summery_bg, fg='#ffffff', highlightthickness=1, highlightbackground='black')
+    specific_exam_mark.grid(row=3, column=1, sticky=W, ipadx=16, ipady=4, padx=(50, 0), pady=(0, 10))
+
+    # Student Percent
+    specific_percent_label = Label(specific_student_frame, text='Percent:', font=('Roboto', 17), 
+    bg=student_frame_bg, fg='#000000', highlightthickness=1, highlightbackground='black')
+    specific_percent_label.grid(row=4, column=0, sticky=W, ipadx=26, ipady=4, pady=(0, 10))
+
+    specific_percent = Label(specific_student_frame, text=f'{student_data_for_use['overall percentage'][call_student]}', 
+    font=('Roboto', 17), bg=summery_bg, fg='#ffffff', highlightthickness=1, highlightbackground='black')
+    specific_percent.grid(row=4, column=1, sticky=W, ipadx=16, ipady=4, padx=(50, 0), pady=(0, 10))
+
+    # Student Grade
+    specific_grade_label = Label(specific_student_frame, text='Grade:', font=('Roboto', 17), 
+    bg=student_frame_bg, fg='#000000', highlightthickness=1, highlightbackground='black')
+    specific_grade_label.grid(row=5, column=0, sticky=W, ipadx=26, ipady=4, pady=(0, 10))
+
+    specific_grade = Label(specific_student_frame, text=f'{student_data_for_use['grade'][call_student]}', 
+    font=('Roboto', 17), bg=summery_bg, fg='#ffffff', highlightthickness=1, highlightbackground='black')
+    specific_grade.grid(row=5, column=1, sticky=W, ipadx=16, ipady=4, padx=(50, 0), pady=(0, 10))
 
 displayStudents()
 
